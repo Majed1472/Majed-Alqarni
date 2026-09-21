@@ -3,532 +3,1063 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>درع الوطن: حامي الحدود - اليوم الوطني السعودي</title>
+    <title>درع الوطن: حامي الحدود | لعبة اليوم الوطني السعودي</title>
+
+    <!-- External Libraries & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Cairo:wght@600;800;900&display=swap" rel="stylesheet">
+
     <style>
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
             user-select: none;
             -webkit-user-select: none;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-touch-callout: none;
+            touch-action: manipulation;
         }
 
         body {
-            background-color: #08170e;
+            font-family: 'Tajawal', sans-serif;
+            background-color: #03120a;
             color: #ffffff;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             height: 100vh;
             width: 100vw;
         }
 
-        #game-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            height: 100%;
-            max-height: 600px;
-            background: linear-gradient(to bottom, #030a05, #0d2818);
-            border: 2px solid #00a859;
-            box-shadow: 0 0 20px rgba(0, 255, 128, 0.2);
-            overflow: hidden;
+        .title-font {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF0B3 0%, #D4AF37 50%, #AA7C11 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .emerald-card {
+            background: rgba(3, 30, 16, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 108, 53, 0.25);
+        }
+
+        .btn-saudi {
+            background: linear-gradient(135deg, #006C35 0%, #004d25 100%);
+            border: 1px solid #D4AF37;
+            box-shadow: 0 0 15px rgba(0, 108, 53, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-saudi:hover {
+            background: linear-gradient(135deg, #008743 0%, #006C35 100%);
+            border-color: #FFF0B3;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+        }
+
+        .btn-saudi:active {
+            transform: translateY(1px);
+        }
+
+        .pulse-gold {
+            animation: pulse-gold-anim 2s infinite;
+        }
+
+        @keyframes pulse-gold-anim {
+            0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+        }
+
+        .shake-anim {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
         }
 
         canvas {
             display: block;
-            width: 100%;
-            height: 100%;
-            cursor: crosshair;
+            touch-action: none;
         }
 
-        /* HUD Overlay */
-        .hud {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            pointer-events: none;
-            z-index: 10;
+        /* Custom Scrollbar for rank lists */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
-
-        .hud-box {
-            background: rgba(3, 20, 10, 0.8);
-            border: 1px solid #00ff88;
-            padding: 8px 14px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #00ff88;
-            box-shadow: 0 0 10px rgba(0,255,136,0.3);
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 40, 20, 0.5);
         }
-
-        .hud-box span {
-            color: #ffffff;
-        }
-
-        /* Ultimate Skill Button */
-        #f15-btn {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 12px 24px;
-            background: linear-gradient(45deg, #111, #006c35);
-            border: 2px solid #ffcc00;
-            color: #ffcc00;
-            font-weight: bold;
-            font-size: 15px;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
-            display: none;
-            z-index: 15;
-            transition: all 0.2s ease;
-        }
-
-        #f15-btn:active {
-            transform: translateX(-50%) scale(0.95);
-        }
-
-        #f15-btn.ready {
-            display: block;
-            animation: pulse 1s infinite alternate;
-        }
-
-        @keyframes pulse {
-            from { box-shadow: 0 0 10px #ffcc00; }
-            to { box-shadow: 0 0 25px #ffcc00, 0 0 5px #ffffff; }
-        }
-
-        /* Screens Screens */
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(4, 15, 8, 0.92);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            z-index: 20;
-        }
-
-        .screen h1 {
-            color: #00ff88;
-            font-size: 32px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(0,255,136,0.5);
-        }
-
-        .screen h2 {
-            color: #ffcc00;
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-
-        .screen p {
-            color: #cccccc;
-            margin-bottom: 25px;
-            max-width: 500px;
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #00a859, #005a2f);
-            color: white;
-            border: none;
-            padding: 12px 32px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 168, 89, 0.4);
-            transition: 0.2s;
-            margin: 5px;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, #00c96b, #00733c);
-            transform: translateY(-2px);
-        }
-
-        .btn-share {
-            background: #1da1f2;
-            box-shadow: 0 4px 15px rgba(29, 161, 242, 0.4);
-        }
-
-        .hidden { display: none !important; }
-
-        /* National Crest Badge */
-        .badge {
-            width: 70px;
-            height: 70px;
-            background: #006c35;
-            border: 2px solid #ffcc00;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            margin-bottom: 15px;
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body>
+<body class="relative flex flex-col justify-between items-center select-none bg-slate-950">
 
-<div id="game-container">
-    <!-- HUD -->
-    <div class="hud">
-        <div class="hud-box">النقاط: <span id="score">0</span></div>
-        <div class="hud-box">سلامة الحدود: <span id="health">100%</span></div>
-        <div class="hud-box">الرتبة: <span id="rank">ملازم</span></div>
-    </div>
-
-    <!-- F15 Skill Button -->
-    <button id="f15-btn" onclick="useF15()">🇸🇦 استدعاء F-15 (ضربة قاضية)</button>
-
-    <!-- Start Screen -->
-    <div id="start-screen" class="screen">
-        <div class="badge">🇸🇦</div>
-        <h1>درع الوطن: حامي الحدود</h1>
-        <h2>بمناسبة اليوم الوطني السعودي</h2>
-        <p>قم باعتراض الصواريخ والطائرات المسيرة المعادية قبل وصولها للحدود. اضغط على الشاشة لإطلاق صواريخ الدفاع الجوي.</p>
-        <button class="btn" onclick="startGame()">ابدأ المهمة</button>
-    </div>
-
-    <!-- Game Over Screen -->
-    <div id="game-over-screen" class="screen hidden">
-        <h1>انتهت المعركة</h1>
-        <h2 id="final-rank">الرتبة: بطل الحدود</h2>
-        <p>تم تحقيق نتيجة: <strong id="final-score" style="color: #00ff88;">0</strong> نقطة في الدفاع عن مقدسات الوطن.</p>
-        <div>
-            <button class="btn" onclick="startGame()">إعادة المحاولة</button>
-            <button class="btn btn-share" onclick="shareResult()">مشاركة النتيجة 🚀</button>
-        </div>
-    </div>
-
-    <canvas id="gameCanvas"></canvas>
-</div>
-
-<script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    const container = document.getElementById('game-container');
-
-    // Resize canvas
-    function resizeCanvas() {
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Audio Synthesizer (Web Audio API)
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    let audioCtx;
-
-    function playSound(type) {
-        if (!audioCtx) audioCtx = new AudioCtx();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        const now = audioCtx.currentTime;
-
-        if (type === 'launch') {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(400, now);
-            osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
-            gain.gain.setValueAtTime(0.2, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-            osc.start(now);
-            osc.stop(now + 0.3);
-        } else if (type === 'explosion') {
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(120, now);
-            osc.frequency.exponentialRampToValueAtTime(30, now + 0.4);
-            gain.gain.setValueAtTime(0.4, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
-            osc.start(now);
-            osc.stop(now + 0.4);
-        } else if (type === 'f15') {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, now);
-            osc.frequency.linearRampToValueAtTime(600, now + 0.8);
-            osc.frequency.linearRampToValueAtTime(100, now + 1.5);
-            gain.gain.setValueAtTime(0.3, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 1.5);
-            osc.start(now);
-            osc.stop(now + 1.5);
-        }
-    }
-
-    // Game Variables
-    let gameActive = false;
-    let score = 0;
-    let health = 100;
-    let f15Charge = 0;
-    let playerMissiles = [];
-    let enemyMissiles = [];
-    let explosions = [];
-    let f15Strike = null;
-    let spawnTimer = 0;
-
-    // Ranks
-    function getRank(s) {
-        if (s < 100) return "ملازم";
-        if (s < 300) return "نقيب";
-        if (s < 600) return "رائد";
-        if (s < 1000) return "عقيد";
-        return "بطل المملكة 🇸🇦";
-    }
-
-    // Controls
-    canvas.addEventListener('click', (e) => {
-        if (!gameActive) return;
-        const rect = canvas.getBoundingClientRect();
-        const targetX = e.clientX - rect.left;
-        const targetY = e.clientY - rect.top;
+    <!-- Top HUD Bar -->
+    <header id="hud-bar" class="hidden absolute top-0 left-0 right-0 z-20 p-3 md:p-4 flex justify-between items-center bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
         
-        // Launch interceptor
-        playerMissiles.push({
-            startX: canvas.width / 2,
-            startY: canvas.height - 20,
-            x: canvas.width / 2,
-            y: canvas.height - 20,
-            targetX: targetX,
-            targetY: targetY,
-            speed: 8
-        });
-        playSound('launch');
-    });
+        <!-- Left: Stats (Score & Wave) -->
+        <div class="flex items-center space-x-3 space-x-reverse pointer-events-auto">
+            <div class="emerald-card px-3 py-1.5 md:px-4 md:py-2 rounded-xl flex items-center gap-2 border border-emerald-500/30">
+                <i class="fa-solid me-1 fa-trophy text-amber-400 text-sm md:text-base"></i>
+                <div>
+                    <div class="text-[10px] md:text-xs text-emerald-300">النقاط</div>
+                    <div id="hud-score" class="text-sm md:text-lg font-bold text-white tracking-wide">0</div>
+                </div>
+            </div>
 
-    function startGame() {
-        score = 0;
-        health = 100;
-        f15Charge = 0;
-        playerMissiles = [];
-        enemyMissiles = [];
-        explosions = [];
-        f15Strike = null;
-        gameActive = true;
+            <div class="emerald-card px-3 py-1.5 md:px-4 md:py-2 rounded-xl flex items-center gap-2 border border-emerald-500/30">
+                <i class="fa-solid me-1 fa-shield-halved text-emerald-400 text-sm md:text-base"></i>
+                <div>
+                    <div class="text-[10px] md:text-xs text-emerald-300">الموجة</div>
+                    <div id="hud-wave" class="text-sm md:text-lg font-bold text-emerald-400">1</div>
+                </div>
+            </div>
+        </div>
 
-        document.getElementById('start-screen').classList.add('hidden');
-        document.getElementById('game-over-screen').classList.add('hidden');
-        document.getElementById('f15-btn').classList.remove('ready');
+        <!-- Center: Health Bar -->
+        <div class="pointer-events-auto flex flex-col items-center w-36 sm:w-48 md:w-64">
+            <div class="flex justify-between w-full text-[10px] md:text-xs font-bold mb-1 text-emerald-200">
+                <span>سلامة الحدود</span>
+                <span id="hud-health-text">100%</span>
+            </div>
+            <div class="w-full h-3 md:h-4 bg-emerald-950/80 rounded-full p-0.5 border border-emerald-500/40 overflow-hidden shadow-inner">
+                <div id="hud-health-bar" class="h-full bg-gradient-to-l from-emerald-400 via-green-500 to-emerald-600 rounded-full transition-all duration-300 w-full shadow-lg shadow-emerald-500/50"></div>
+            </div>
+        </div>
 
-        updateHUD();
-        requestAnimationFrame(gameLoop);
-    }
+        <!-- Right: Controls & Ability -->
+        <div class="flex items-center space-x-2 space-x-reverse pointer-events-auto">
+            <!-- F15 Ability Button -->
+            <button id="f15-btn" onclick="triggerF15Strike()" class="relative opacity-50 cursor-not-allowed emerald-card px-3 py-2 md:px-4 md:py-2 rounded-xl flex items-center gap-2 border border-amber-500/40 text-amber-300 font-bold text-xs md:text-sm transition-all" disabled>
+                <i class="fa-solid fa-jet-fighter text-amber-400 text-base md:text-lg"></i>
+                <span class="hidden sm:inline">ضربة F-15</span>
+                <div id="f15-charge-text" class="text-[10px] text-amber-200 font-normal">0%</div>
+                <!-- Glow ring overlay when ready -->
+                <div id="f15-glow" class="hidden absolute -inset-0.5 bg-amber-400 rounded-xl blur opacity-75 animate-pulse -z-10"></div>
+            </button>
 
-    function updateHUD() {
-        document.getElementById('score').innerText = score;
-        document.getElementById('health').innerText = Math.max(0, health) + '%';
-        document.getElementById('rank').innerText = getRank(score);
+            <!-- Mute Sound Toggle -->
+            <button id="sound-btn" onclick="toggleSound()" class="emerald-card p-2 md:p-2.5 rounded-xl text-emerald-300 hover:text-white transition">
+                <i id="sound-icon" class="fa-solid fa-volume-high text-sm md:text-base"></i>
+            </button>
 
-        if (f15Charge >= 5 && !f15Strike) {
-            document.getElementById('f15-btn').classList.add('ready');
-        } else {
-            document.getElementById('f15-btn').classList.remove('ready');
-        }
-    }
+            <!-- Pause Button -->
+            <button id="pause-btn" onclick="togglePause()" class="emerald-card p-2 md:p-2.5 rounded-xl text-emerald-300 hover:text-white transition">
+                <i id="pause-icon" class="fa-solid fa-pause text-sm md:text-base"></i>
+            </button>
+        </div>
+    </header>
 
-    function useF15() {
-        if (f15Charge < 5 || f15Strike) return;
-        f15Charge = 0;
-        document.getElementById('f15-btn').classList.remove('ready');
-        playSound('f15');
+    <!-- Main Game Canvas Container -->
+    <main class="relative w-full h-full flex-grow flex items-center justify-center overflow-hidden">
+        <canvas id="gameCanvas" class="w-full h-full cursor-crosshair"></canvas>
+    </main>
 
-        f15Strike = {
-            x: -100,
-            y: canvas.height * 0.3,
-            speed: 15
-        };
-    }
+    <!-- Toast Notification Overlay -->
+    <div id="toast-msg" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 opacity-0 pointer-events-none transition-all duration-300 bg-emerald-900/90 text-amber-300 px-6 py-2.5 rounded-full border border-amber-400/50 text-sm font-bold shadow-2xl flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-amber-400"></i>
+        <span id="toast-text">تم نسخ النتيجة بنجاح!</span>
+    </div>
 
-    function spawnEnemy() {
-        const startX = Math.random() * (canvas.width - 40) + 20;
-        enemyMissiles.push({
-            x: startX,
-            y: 0,
-            targetX: startX + (Math.random() * 100 - 50),
-            targetY: canvas.height,
-            speed: 1.5 + Math.random() * 1.5 + (score / 200)
-        });
-    }
+    <!-- START SCREEN OVERLAY -->
+    <section id="start-screen" class="fixed inset-0 z-30 flex items-center justify-center p-4 bg-radial from-emerald-950/80 via-slate-950/95 to-black">
+        <div class="emerald-card w-full max-w-lg p-6 md:p-8 rounded-3xl text-center border-2 border-amber-500/40 relative overflow-hidden shadow-2xl">
+            
+            <!-- Saudi Flag Emblem Aesthetic Header -->
+            <div class="flex justify-center items-center gap-3 mb-3">
+                <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+                <div class="bg-emerald-800/60 p-2.5 rounded-2xl border border-amber-400/50 shadow-lg">
+                    <i class="fa-solid fa-shield-halved text-2xl text-amber-400"></i>
+                </div>
+                <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+            </div>
 
-    function endGame() {
-        gameActive = false;
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('final-rank').innerText = "الرتبة الوطنية: " + getRank(score);
-        document.getElementById('game-over-screen').classList.remove('hidden');
-    }
+            <div class="text-xs font-bold text-amber-400 tracking-widest uppercase mb-1">احتفالاً باليوم الوطني السعودي 94</div>
+            <h1 class="title-font text-3xl md:text-4xl font-black text-white mb-2 leading-tight">
+                درع الوطن <span class="gold-gradient-text block text-2xl md:text-3xl mt-1">حامي الحدود</span>
+            </h1>
+            <p class="text-emerald-200/90 text-xs md:text-sm mb-6 leading-relaxed">
+                قُد منظومة الدفاع الجوي الملكية السعودية، واعترض المسيرات والصوارخ المعادية لحماية أراضي وسموات المملكة العربية السعودية.
+            </p>
 
-    function shareResult() {
-        const text = `حققت ${score} نقطة ورتبة (${getRank(score)}) في لعبة "درع الوطن" بمناسبة اليوم الوطني السعودي! 🇸🇦🛡️`;
-        if (navigator.share) {
-            navigator.share({ title: 'درع الوطن', text: text, url: window.location.href });
-        } else {
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
-        }
-    }
+            <!-- Instructions Card -->
+            <div class="bg-black/40 rounded-2xl p-4 text-right mb-6 border border-emerald-500/20 text-xs md:text-sm space-y-2.5">
+                <div class="font-bold text-amber-300 flex items-center gap-2 border-b border-emerald-500/20 pb-2">
+                    <i class="fa-solid fa-circle-info text-emerald-400"></i> تعليمات المعركة:
+                </div>
+                <div class="flex items-center gap-2.5 text-gray-200">
+                    <i class="fa-solid fa-crosshair text-amber-400 text-sm"></i>
+                    <span>انقر أو المس في أي مكان لإطلاق صواريخ الباتريوت واعتراض الأهداف.</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-gray-200">
+                    <i class="fa-solid fa-jet-fighter text-emerald-400 text-sm"></i>
+                    <span>دمر الأعداء لملء شريط <strong class="text-amber-300">سلاح الجو F-15</strong> لتطهير الأجواء كلياً.</span>
+                </div>
+                <div class="flex items-center gap-2.5 text-gray-200">
+                    <i class="fa-solid fa-heart-pulse text-red-400 text-sm"></i>
+                    <span>حافظ على سلامة القواعد والحدود لضمان استمرار الحماية.</span>
+                </div>
+            </div>
 
-    // Main Game Loop
-    function gameLoop() {
-        if (!gameActive) return;
+            <!-- Start Button -->
+            <button onclick="startGame()" class="btn-saudi w-full py-3.5 px-6 rounded-2xl text-white font-black text-lg flex items-center justify-center gap-3 pulse-gold cursor-pointer">
+                <i class="fa-solid fa-play text-amber-300"></i>
+                <span>ابدأ المعركة الآن</span>
+            </button>
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+            <!-- Slogan Badge -->
+            <div class="mt-5 text-[11px] text-emerald-400/80 font-semibold tracking-wide">
+                💚 نحلم ونحقق | هي لنا دار 💚
+            </div>
+        </div>
+    </section>
 
-        // Draw Ground / Border Base
-        ctx.fillStyle = '#004d25';
-        ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
-        ctx.fillStyle = '#ffcc00';
-        ctx.fillRect(canvas.width / 2 - 25, canvas.height - 25, 50, 10); // Battery Base
+    <!-- GAME OVER / RESULT OVERLAY -->
+    <section id="gameover-screen" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+        <div class="emerald-card w-full max-w-md p-6 md:p-8 rounded-3xl text-center border-2 border-amber-500/50 relative shadow-2xl">
+            
+            <div id="result-icon-container" class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center bg-emerald-900/80 border-2 border-amber-400 shadow-xl">
+                <i id="result-icon" class="fa-solid fa-award text-3xl text-amber-400"></i>
+            </div>
 
-        // Enemy Spawning
-        spawnTimer++;
-        if (spawnTimer > Math.max(20, 80 - Math.floor(score / 20))) {
-            spawnEnemy();
-            spawnTimer = 0;
-        }
+            <h2 id="result-title" class="title-font text-2xl md:text-3xl font-black text-white mb-1">
+                انتهت المعركة
+            </h2>
+            <div id="result-rank" class="gold-gradient-text text-base md:text-lg font-bold mb-4">
+                الرتبة: قائد جبهة
+            </div>
 
-        // Update & Draw Player Missiles
-        for (let i = playerMissiles.length - 1; i >= 0; i--) {
-            let m = playerMissiles[i];
-            let dx = m.targetX - m.x;
-            let dy = m.targetY - m.y;
-            let dist = Math.hypot(dx, dy);
+            <!-- Stats Box -->
+            <div class="grid grid-cols-2 gap-3 mb-5">
+                <div class="bg-black/50 p-3 rounded-2xl border border-emerald-500/30">
+                    <div class="text-[11px] text-emerald-300">مجموع النقاط</div>
+                    <div id="res-score" class="text-xl font-bold text-amber-300">0</div>
+                </div>
+                <div class="bg-black/50 p-3 rounded-2xl border border-emerald-500/30">
+                    <div class="text-[11px] text-emerald-300">الأهداف المدمرة</div>
+                    <div id="res-kills" class="text-xl font-bold text-emerald-400">0</div>
+                </div>
+                <div class="bg-black/50 p-3 rounded-2xl border border-emerald-500/30">
+                    <div class="text-[11px] text-emerald-300">الموجات المكتملة</div>
+                    <div id="res-waves" class="text-xl font-bold text-white">0</div>
+                </div>
+                <div class="bg-black/50 p-3 rounded-2xl border border-emerald-500/30">
+                    <div class="text-[11px] text-emerald-300">أعلى رقم قياسي</div>
+                    <div id="res-high" class="text-xl font-bold text-amber-400">0</div>
+                </div>
+            </div>
 
-            if (dist < m.speed) {
-                explosions.push({ x: m.targetX, y: m.targetY, radius: 2, maxRadius: 35, growing: true });
-                playerMissiles.splice(i, 1);
-                playSound('explosion');
-            } else {
-                m.x += (dx / dist) * m.speed;
-                m.y += (dy / dist) * m.speed;
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                <button onclick="startGame()" class="btn-saudi w-full py-3 rounded-xl text-white font-bold text-base flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>إعادة المحاولة</span>
+                </button>
 
-                ctx.strokeStyle = '#00ff88';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(m.startX, m.startY);
-                ctx.lineTo(m.x, m.y);
-                ctx.stroke();
+                <!-- Social Share Grid -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="shareScore('whatsapp')" class="bg-green-700/80 hover:bg-green-600 text-white py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-green-500/40">
+                        <i class="fa-brands fa-whatsapp text-base"></i> واتساب
+                    </button>
+                    <button onclick="shareScore('x')" class="bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-600">
+                        <i class="fa-brands fa-x-twitter text-base"></i> منصة X
+                    </button>
+                    <button onclick="copyScoreText()" class="bg-amber-700/80 hover:bg-amber-600 text-white py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-amber-500/40">
+                        <i class="fa-solid fa-copy text-base"></i> نسخ
+                    </button>
+                </div>
+            </div>
+
+            <p class="mt-4 text-[10px] text-emerald-400/70">
+                شارك إنجازك الوطني مع أصدقائك واحتفل باليوم الوطني 🇸🇦
+            </p>
+        </div>
+    </section>
+
+    <script>
+        // Web Audio API Synthesizer (No external audio files required)
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playLaunch() {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.2);
+                    
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                    
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.2);
+                } catch(e) {}
+            }
+
+            playExplosion() {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const bufferSize = this.ctx.sampleRate * 0.3;
+                    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+
+                    const noise = this.ctx.createBufferSource();
+                    noise.buffer = buffer;
+
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(800, this.ctx.currentTime);
+                    filter.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + 0.3);
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+
+                    noise.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    noise.start();
+                } catch(e) {}
+            }
+
+            playJet() {
+                if (this.muted || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(350, this.ctx.currentTime + 1.2);
+                    
+                    gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.25, this.ctx.currentTime + 0.6);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.5);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 1.5);
+                } catch(e) {}
+            }
+
+            playVictory() {
+                if (this.muted || !this.ctx) return;
+                const notes = [440, 554.37, 659.25, 880]; // A major chord fanfare
+                notes.forEach((freq, idx) => {
+                    setTimeout(() => {
+                        try {
+                            const osc = this.ctx.createOscillator();
+                            const gain = this.ctx.createGain();
+                            osc.type = 'triangle';
+                            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+                            osc.connect(gain);
+                            gain.connect(this.ctx.destination);
+                            osc.start();
+                            osc.stop(this.ctx.currentTime + 0.5);
+                        } catch(e) {}
+                    }, idx * 120);
+                });
             }
         }
 
-        // Update & Draw Explosions
-        for (let i = explosions.length - 1; i >= 0; i--) {
-            let ex = explosions[i];
-            if (ex.growing) {
-                ex.radius += 2;
-                if (ex.radius >= ex.maxRadius) ex.growing = false;
-            } else {
-                ex.radius -= 1;
-                if (ex.radius <= 0) {
+        // Canvas & Game Variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const sound = new SoundEngine();
+
+        let gameState = 'START'; // START, PLAYING, PAUSED, GAMEOVER
+        let score = 0;
+        let wave = 1;
+        let health = 100;
+        let f15Charge = 0; // 0 to 100
+        let totalKills = 0;
+        let highScore = parseInt(localStorage.getItem('saudi_defender_highscore') || '0');
+        let animationFrameId = null;
+        let lastTime = 0;
+
+        // Game Entities
+        let enemies = [];
+        let playerMissiles = [];
+        let explosions = [];
+        let particles = [];
+        let f15Jet = { active: false, x: 0, y: 0, speed: 0, progress: 0 };
+        let bases = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            setupBases();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function setupBases() {
+            const count = 3;
+            bases = [];
+            const spacing = canvas.width / (count + 1);
+            for (let i = 1; i <= count; i++) {
+                bases.push({
+                    x: spacing * i,
+                    y: canvas.height - 35,
+                    active: true,
+                    label: `قاعدة ${i}`
+                });
+            }
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            if (gameState !== 'PLAYING') return;
+            sound.init();
+
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            // Don't fire if tapping near top HUD
+            if (clickY < 70) return;
+
+            launchPatriot(clickX, clickY);
+        });
+
+        function launchPatriot(targetX, targetY) {
+            // Find active base closest to target
+            let activeBases = bases.filter(b => b.active);
+            if (activeBases.length === 0) activeBases = bases; // Fallback to center if all down
+
+            let closestBase = activeBases[0];
+            let minDist = Math.hypot(closestBase.x - targetX, closestBase.y - targetY);
+
+            for (let i = 1; i < activeBases.length; i++) {
+                let dist = Math.hypot(activeBases[i].x - targetX, activeBases[i].y - targetY);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closestBase = activeBases[i];
+                }
+            }
+
+            const speed = 12;
+            const angle = Math.atan2(targetY - closestBase.y, targetX - closestBase.x);
+
+            playerMissiles.push({
+                startX: closestBase.x,
+                startY: closestBase.y,
+                currentX: closestBase.x,
+                currentY: closestBase.y,
+                targetX: targetX,
+                targetY: targetY,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                maxRadius: 45
+            });
+
+            sound.playLaunch();
+        }
+
+        let enemySpawnTimer = 0;
+        function updateEnemySpawns(delta) {
+            enemySpawnTimer += delta;
+            // Spawn interval decreases with higher waves
+            const spawnInterval = Math.max(600, 2200 - (wave * 180));
+
+            if (enemySpawnTimer > spawnInterval) {
+                enemySpawnTimer = 0;
+                spawnEnemy();
+            }
+        }
+
+        function spawnEnemy() {
+            const types = ['drone', 'fast_uav', 'ballistic'];
+            const randType = types[Math.floor(Math.random() * (wave > 2 ? 3 : 2))];
+
+            const startX = Math.random() * (canvas.width - 60) + 30;
+            const startY = -20;
+
+            // Target one of the bases or random ground
+            const targetBase = bases[Math.floor(Math.random() * bases.length)];
+            const targetX = targetBase.x + (Math.random() * 40 - 20);
+            const targetY = canvas.height - 20;
+
+            let speed = 1.8 + (wave * 0.25);
+            let hp = 1;
+            let radius = 12;
+            let scoreVal = 100;
+
+            if (randType === 'fast_uav') {
+                speed *= 1.5;
+                radius = 9;
+                scoreVal = 150;
+            } else if (randType === 'ballistic') {
+                speed *= 0.9;
+                radius = 15;
+                hp = 2;
+                scoreVal = 200;
+            }
+
+            const angle = Math.atan2(targetY - startY, targetX - startX);
+
+            enemies.push({
+                x: startX,
+                y: startY,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                targetX: targetX,
+                targetY: targetY,
+                type: randType,
+                hp: hp,
+                radius: radius,
+                scoreVal: scoreVal,
+                trail: []
+            });
+        }
+
+        function triggerF15Strike() {
+            if (f15Charge < 100 || f15Jet.active || gameState !== 'PLAYING') return;
+
+            f15Charge = 0;
+            updateF15Button();
+
+            f15Jet.active = true;
+            f15Jet.x = -100;
+            f15Jet.y = canvas.height * 0.35;
+            f15Jet.speed = canvas.width / 50; // Fly across in ~1 second
+
+            sound.playJet();
+
+            // Destroy all currently visible enemies on screen after brief delay
+            setTimeout(() => {
+                enemies.forEach(enemy => {
+                    createExplosion(enemy.x, enemy.y, 60, '#D4AF37');
+                    createParticles(enemy.x, enemy.y, '#006C35', 15);
+                    score += enemy.scoreVal;
+                    totalKills++;
+                });
+                enemies = [];
+                updateHUD();
+            }, 500);
+        }
+
+        function createExplosion(x, y, maxRadius = 45, color = '#D4AF37') {
+            explosions.push({
+                x: x,
+                y: y,
+                radius: 2,
+                maxRadius: maxRadius,
+                speed: 2.5,
+                color: color,
+                alpha: 1
+            });
+            sound.playExplosion();
+        }
+
+        function createParticles(x, y, color, count = 10) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 1;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    color: color,
+                    size: Math.random() * 3 + 1.5,
+                    alpha: 1,
+                    decay: Math.random() * 0.03 + 0.015
+                });
+            }
+        }
+
+        function update(delta) {
+            if (gameState !== 'PLAYING') return;
+
+            updateEnemySpawns(delta);
+
+            // Update Player Interceptor Missiles
+            for (let i = playerMissiles.length - 1; i >= 0; i--) {
+                const m = playerMissiles[i];
+                m.currentX += m.vx;
+                m.currentY += m.vy;
+
+                // Check if reached target
+                const dist = Math.hypot(m.targetX - m.currentX, m.targetY - m.currentY);
+                if (dist < 10) {
+                    createExplosion(m.targetX, m.targetY, m.maxRadius, '#006C35');
+                    playerMissiles.splice(i, 1);
+                }
+            }
+
+            // Update Explosions
+            for (let i = explosions.length - 1; i >= 0; i--) {
+                const exp = explosions[i];
+                exp.radius += exp.speed;
+                if (exp.radius >= exp.maxRadius) {
+                    exp.alpha -= 0.05;
+                }
+
+                if (exp.alpha <= 0) {
                     explosions.splice(i, 1);
                     continue;
                 }
-            }
 
-            ctx.fillStyle = 'rgba(0, 255, 136, 0.4)';
-            ctx.strokeStyle = '#ffcc00';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-        }
+                // Explosion collision with enemies
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    const e = enemies[j];
+                    const d = Math.hypot(e.x - exp.x, e.y - exp.y);
+                    if (d < exp.radius + e.radius) {
+                        e.hp--;
+                        createParticles(e.x, e.y, '#FFD700', 8);
 
-        // Update & Draw Enemies
-        for (let i = enemyMissiles.length - 1; i >= 0; i--) {
-            let em = enemyMissiles[i];
-            em.y += em.speed;
+                        if (e.hp <= 0) {
+                            score += e.scoreVal;
+                            totalKills++;
 
-            ctx.strokeStyle = '#ff3333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(em.x, em.y - 10);
-            ctx.lineTo(em.x, em.y);
-            ctx.stroke();
+                            // Charge F-15 ability (+8% per destroy)
+                            f15Charge = Math.min(100, f15Charge + 8);
+                            updateF15Button();
 
-            // Collision with Explosions
-            let destroyed = false;
-            for (let ex of explosions) {
-                if (Math.hypot(em.x - ex.x, em.y - ex.y) < ex.radius) {
-                    destroyed = true;
-                    break;
+                            createExplosion(e.x, e.y, 30, '#FF4500');
+                            enemies.splice(j, 1);
+                            updateHUD();
+                        }
+                    }
                 }
             }
 
-            if (destroyed) {
-                enemyMissiles.splice(i, 1);
-                score += 10;
-                f15Charge += 1;
-                updateHUD();
-                continue;
+            // Update Enemies
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const e = enemies[i];
+                e.x += e.vx;
+                e.y += e.vy;
+
+                // Add trail points
+                e.trail.push({ x: e.x, y: e.y });
+                if (e.trail.length > 8) e.trail.shift();
+
+                // Reached ground / defense border
+                if (e.y >= canvas.height - 35) {
+                    health = Math.max(0, health - (e.type === 'ballistic' ? 20 : 10));
+                    createExplosion(e.x, e.y, 50, '#FF0000');
+                    document.body.classList.add('shake-anim');
+                    setTimeout(() => document.body.classList.remove('shake-anim'), 400);
+
+                    enemies.splice(i, 1);
+                    updateHUD();
+
+                    if (health <= 0) {
+                        gameOver();
+                        return;
+                    }
+                }
             }
 
-            // Hit Border Ground
-            if (em.y >= canvas.height - 20) {
-                enemyMissiles.splice(i, 1);
-                health -= 15;
+            // Update Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.decay;
+                if (p.alpha <= 0) particles.splice(i, 1);
+            }
+
+            // Update F15 Jet Flyby
+            if (f15Jet.active) {
+                f15Jet.x += f15Jet.speed;
+                // Add green smoke trail
+                particles.push({
+                    x: f15Jet.x - 30,
+                    y: f15Jet.y + (Math.random() * 6 - 3),
+                    vx: -2,
+                    vy: Math.random() * 2 - 1,
+                    color: '#006C35',
+                    size: Math.random() * 8 + 4,
+                    alpha: 0.8,
+                    decay: 0.02
+                });
+
+                if (f15Jet.x > canvas.width + 120) {
+                    f15Jet.active = false;
+                }
+            }
+
+            // Wave progression check
+            if (totalKills >= wave * 10) {
+                wave++;
                 updateHUD();
-                if (health <= 0) endGame();
+                sound.playVictory();
             }
         }
 
-        // F-15 Strike Effect
-        if (f15Strike) {
-            f15Strike.x += f15Strike.speed;
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Jet Graphic
-            ctx.fillStyle = '#cccccc';
+            // 1. Draw Starry Sky & Night Gradient
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrad.addColorStop(0, '#020d07');
+            skyGrad.addColorStop(0.6, '#051f12');
+            skyGrad.addColorStop(1, '#09361f');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Saudi Emerald Aurora Effect
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 108, 53, 0.08)';
             ctx.beginPath();
-            ctx.moveTo(f15Strike.x, f15Strike.y);
-            ctx.lineTo(f15Strike.x - 40, f15Strike.y - 15);
-            ctx.lineTo(f15Strike.x - 40, f15Strike.y + 15);
+            ctx.arc(canvas.width * 0.5, 0, canvas.width * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            // 2. Draw Mountains Silhouette at bottom
+            ctx.fillStyle = '#02120a';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height);
+            for (let x = 0; x <= canvas.width; x += 60) {
+                const mountainY = canvas.height - 50 - Math.sin(x * 0.01) * 25 - Math.cos(x * 0.025) * 15;
+                ctx.lineTo(x, mountainY);
+            }
+            ctx.lineTo(canvas.width, canvas.height);
             ctx.closePath();
             ctx.fill();
 
-            // Green Smoke Trail
-            ctx.strokeStyle = '#00a859';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(f15Strike.x - 40, f15Strike.y);
-            ctx.lineTo(0, f15Strike.y);
-            ctx.stroke();
+            // 3. Draw Saudi Defense Bases
+            bases.forEach(base => {
+                ctx.save();
+                // Base platform
+                ctx.fillStyle = '#004d25';
+                ctx.fillRect(base.x - 25, base.y - 10, 50, 20);
+                ctx.strokeStyle = '#D4AF37';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(base.x - 25, base.y - 10, 50, 20);
 
-            // Clear screen enemies
-            for (let i = enemyMissiles.length - 1; i >= 0; i--) {
-                explosions.push({ x: enemyMissiles[i].x, y: enemyMissiles[i].y, radius: 5, maxRadius: 30, growing: true });
-                enemyMissiles.splice(i, 1);
-                score += 10;
-            }
-            updateHUD();
+                // Radar dish dome
+                ctx.fillStyle = '#D4AF37';
+                ctx.beginPath();
+                ctx.arc(base.x, base.y - 12, 10, Math.PI, 0);
+                ctx.fill();
 
-            if (f15Strike.x > canvas.width + 100) {
-                f15Strike = null;
+                // Base label
+                ctx.fillStyle = '#A7F3D0';
+                ctx.font = 'bold 10px Tajawal';
+                ctx.textAlign = 'center';
+                ctx.fillText(base.label, base.x, base.y + 22);
+                ctx.restore();
+            });
+
+            // 4. Draw Interceptor Missiles & Trails
+            playerMissiles.forEach(m => {
+                ctx.save();
+                // Trail line
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(m.startX, m.startY);
+                ctx.lineTo(m.currentX, m.currentY);
+                ctx.stroke();
+
+                // Target Marker
+                ctx.strokeStyle = '#00FF7F';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(m.targetX, m.targetY, 6, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Missile Head
+                ctx.fillStyle = '#FFFFFF';
+                ctx.beginPath();
+                ctx.arc(m.currentX, m.currentY, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 5. Draw Enemies
+            enemies.forEach(e => {
+                ctx.save();
+
+                // Draw enemy trail
+                if (e.trail.length > 1) {
+                    ctx.strokeStyle = 'rgba(255, 69, 0, 0.4)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(e.trail[0].x, e.trail[0].y);
+                    for (let i = 1; i < e.trail.length; i++) {
+                        ctx.lineTo(e.trail[i].x, e.trail[i].y);
+                    }
+                    ctx.stroke();
+                }
+
+                // Draw Enemy Shape based on Type
+                ctx.translate(e.x, e.y);
+                if (e.type === 'drone') {
+                    ctx.fillStyle = '#FF4500';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, e.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#FFA500';
+                    ctx.stroke();
+                } else if (e.type === 'fast_uav') {
+                    ctx.fillStyle = '#FF1493';
+                    ctx.beginPath();
+                    ctx.moveTo(0, 8);
+                    ctx.lineTo(-7, -7);
+                    ctx.lineTo(7, -7);
+                    ctx.closePath();
+                    ctx.fill();
+                } else if (e.type === 'ballistic') {
+                    ctx.fillStyle = '#DC143C';
+                    ctx.fillRect(-5, -10, 10, 20);
+                    ctx.fillStyle = '#FFD700';
+                    ctx.beginPath();
+                    ctx.moveTo(-5, -10);
+                    ctx.lineTo(0, -18);
+                    ctx.lineTo(5, -10);
+                    ctx.fill();
+                }
+                ctx.restore();
+            });
+
+            // 6. Draw Explosions
+            explosions.forEach(exp => {
+                ctx.save();
+                ctx.globalAlpha = exp.alpha;
+                ctx.fillStyle = exp.color;
+                ctx.beginPath();
+                ctx.arc(exp.x, exp.y, exp.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // 7. Draw Particles
+            particles.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 8. Draw F-15 Fighter Jet Flyby
+            if (f15Jet.active) {
+                ctx.save();
+                ctx.translate(f15Jet.x, f15Jet.y);
+                // Jet SVG-like silhouette
+                ctx.fillStyle = '#E2E8F0';
+                ctx.beginPath();
+                ctx.moveTo(35, 0);
+                ctx.lineTo(-20, -18);
+                ctx.lineTo(-10, 0);
+                ctx.lineTo(-20, 18);
+                ctx.closePath();
+                ctx.fill();
+
+                // Saudi Flag Green Wing accent
+                ctx.fillStyle = '#006C35';
+                ctx.fillRect(-5, -4, 15, 8);
+                ctx.restore();
             }
         }
 
-        requestAnimationFrame(gameLoop);
-    }
-</script>
+        function gameLoop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const delta = timestamp - lastTime;
+            lastTime = timestamp;
+
+            update(delta);
+            render();
+
+            if (gameState === 'PLAYING') {
+                animationFrameId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-score').innerText = score;
+            document.getElementById('hud-wave').innerText = wave;
+            document.getElementById('hud-health-text').innerText = `${health}%`;
+
+            const healthBar = document.getElementById('hud-health-bar');
+            healthBar.style.width = `${health}%`;
+
+            if (health < 35) {
+                healthBar.className = "h-full bg-gradient-to-l from-red-500 to-rose-700 rounded-full transition-all duration-300 w-full shadow-lg shadow-red-500/50";
+            } else if (health < 65) {
+                healthBar.className = "h-full bg-gradient-to-l from-amber-400 to-yellow-600 rounded-full transition-all duration-300 w-full shadow-lg shadow-yellow-500/50";
+            } else {
+                healthBar.className = "h-full bg-gradient-to-l from-emerald-400 via-green-500 to-emerald-600 rounded-full transition-all duration-300 w-full shadow-lg shadow-emerald-500/50";
+            }
+        }
+
+        function updateF15Button() {
+            const btn = document.getElementById('f15-btn');
+            const chargeTxt = document.getElementById('f15-charge-text');
+            const glow = document.getElementById('f15-glow');
+
+            chargeTxt.innerText = `${f15Charge}%`;
+
+            if (f15Charge >= 100) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.classList.add('pulse-gold', 'cursor-pointer');
+                glow.classList.remove('hidden');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+                btn.classList.remove('pulse-gold', 'cursor-pointer');
+                glow.classList.add('hidden');
+            }
+        }
+
+        function startGame() {
+            sound.init();
+            gameState = 'PLAYING';
+
+            // Reset Stats
+            score = 0;
+            wave = 1;
+            health = 100;
+            f15Charge = 0;
+            totalKills = 0;
+            enemies = [];
+            playerMissiles = [];
+            explosions = [];
+            particles = [];
+
+            // UI Elements
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('gameover-screen').classList.add('hidden');
+            document.getElementById('hud-bar').classList.remove('hidden');
+
+            resizeCanvas();
+            updateHUD();
+            updateF15Button();
+
+            lastTime = performance.now();
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function togglePause() {
+            if (gameState === 'PLAYING') {
+                gameState = 'PAUSED';
+                document.getElementById('pause-icon').className = "fa-solid fa-play text-sm md:text-base";
+            } else if (gameState === 'PAUSED') {
+                gameState = 'PLAYING';
+                document.getElementById('pause-icon').className = "fa-solid fa-pause text-sm md:text-base";
+                lastTime = performance.now();
+                animationFrameId = requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function toggleSound() {
+            sound.muted = !sound.muted;
+            const icon = document.getElementById('sound-icon');
+            icon.className = sound.muted ? "fa-solid fa-volume-xmark text-sm md:text-base text-red-400" : "fa-solid fa-volume-high text-sm md:text-base text-emerald-300";
+        }
+
+        function gameOver() {
+            gameState = 'GAMEOVER';
+
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('saudi_defender_highscore', highScore.toString());
+            }
+
+            // Calculate Military Rank based on score
+            let rank = "جندي مدافع";
+            if (score >= 12000) rank = "بطل المملكة - درع الوطن 🇸🇦";
+            else if (score >= 8000) rank = "عميد صقور السعودية";
+            else if (score >= 5000) rank = "عقيد حامي الحدود";
+            else if (score >= 3000) rank = "رائد الدفاع الجوي";
+            else if (score >= 1500) rank = "نقيب حارس الأجواء";
+            else if (score >= 600) rank = "ملازم أول";
+
+            document.getElementById('res-score').innerText = score;
+            document.getElementById('res-kills').innerText = totalKills;
+            document.getElementById('res-waves').innerText = wave;
+            document.getElementById('res-high').innerText = highScore;
+            document.getElementById('result-rank').innerText = `الرتبة المستحقة: ${rank}`;
+
+            document.getElementById('gameover-screen').classList.remove('hidden');
+            sound.playVictory();
+        }
+
+        function shareScore(platform) {
+            const shareText = `🛡️ حققتُ رتبة جديدة في لعبة (درع الوطن: حامي الحدود) بمناسبة اليوم الوطني السعودي 94! \n🎯 النتيجة: ${score} نقطة\n🇸🇦 شاركنا واحمِ حدود الوطن: `;
+            const url = window.location.href;
+
+            if (platform === 'whatsapp') {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + url)}`, '_blank');
+            } else if (platform === 'x') {
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`, '_blank');
+            }
+        }
+
+        function copyScoreText() {
+            const textToCopy = `🛡️ حققتُ رتبة جديدة في لعبة (درع الوطن: حامي الحدود) بمناسبة اليوم الوطني 94! النتيجة: ${score} نقطة 🇸🇦`;
+            
+            // Temporary text area for guaranteed iframe clipboard copy
+            const tempInput = document.createElement('textarea');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+                showToast("تم نسخ النتيجة بنجاح!");
+            } catch (err) {
+                showToast("عذراً، تعذر النسخ المباشر");
+            }
+            document.body.removeChild(tempInput);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-msg');
+            document.getElementById('toast-text').innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // Initialize view on load
+        window.onload = () => {
+            resizeCanvas();
+        };
+    </script>
 </body>
 </html>
