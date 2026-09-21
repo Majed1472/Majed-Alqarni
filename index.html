@@ -221,12 +221,18 @@
 <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const container = document.getElementById('game-container');
 
-    // Resize canvas
+    // Virtual resolution for auto-scaling
+    const V_WIDTH = 800;
+    const V_HEIGHT = 600;
+    let scaleX = 1;
+    let scaleY = 1;
+
     function resizeCanvas() {
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        scaleX = canvas.width / V_WIDTH;
+        scaleY = canvas.height / V_HEIGHT;
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -294,22 +300,22 @@
         return "بطل المملكة 🇸🇦";
     }
 
-    // Controls
+    // Controls with Scale Calculation
     canvas.addEventListener('click', (e) => {
         if (!gameActive) return;
         const rect = canvas.getBoundingClientRect();
-        const targetX = e.clientX - rect.left;
-        const targetY = e.clientY - rect.top;
+        const targetX = (e.clientX - rect.left) / scaleX;
+        const targetY = (e.clientY - rect.top) / scaleY;
         
         // Launch interceptor
         playerMissiles.push({
-            startX: canvas.width / 2,
-            startY: canvas.height - 20,
-            x: canvas.width / 2,
-            y: canvas.height - 20,
+            startX: V_WIDTH / 2,
+            startY: V_HEIGHT - 20,
+            x: V_WIDTH / 2,
+            y: V_HEIGHT - 20,
             targetX: targetX,
             targetY: targetY,
-            speed: 8
+            speed: 10
         });
         playSound('launch');
     });
@@ -352,19 +358,19 @@
 
         f15Strike = {
             x: -100,
-            y: canvas.height * 0.3,
-            speed: 15
+            y: V_HEIGHT * 0.3,
+            speed: 18
         };
     }
 
     function spawnEnemy() {
-        const startX = Math.random() * (canvas.width - 40) + 20;
+        const startX = Math.random() * (V_WIDTH - 60) + 30;
         enemyMissiles.push({
             x: startX,
             y: 0,
             targetX: startX + (Math.random() * 100 - 50),
-            targetY: canvas.height,
-            speed: 1.5 + Math.random() * 1.5 + (score / 200)
+            targetY: V_HEIGHT,
+            speed: 2 + Math.random() * 2 + (score / 200)
         });
     }
 
@@ -384,21 +390,25 @@
         }
     }
 
-    // Main Game Loop
+    // Main Game Loop with Canvas Scaling
     function gameLoop() {
         if (!gameActive) return;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        // Apply scale transformation
+        ctx.save();
+        ctx.scale(scaleX, scaleY);
+
         // Draw Ground / Border Base
         ctx.fillStyle = '#004d25';
-        ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+        ctx.fillRect(0, V_HEIGHT - 20, V_WIDTH, 20);
         ctx.fillStyle = '#ffcc00';
-        ctx.fillRect(canvas.width / 2 - 25, canvas.height - 25, 50, 10); // Battery Base
+        ctx.fillRect(V_WIDTH / 2 - 35, V_HEIGHT - 30, 70, 15); // Battery Base
 
         // Enemy Spawning
         spawnTimer++;
-        if (spawnTimer > Math.max(20, 80 - Math.floor(score / 20))) {
+        if (spawnTimer > Math.max(20, 70 - Math.floor(score / 20))) {
             spawnEnemy();
             spawnTimer = 0;
         }
@@ -411,7 +421,7 @@
             let dist = Math.hypot(dx, dy);
 
             if (dist < m.speed) {
-                explosions.push({ x: m.targetX, y: m.targetY, radius: 2, maxRadius: 35, growing: true });
+                explosions.push({ x: m.targetX, y: m.targetY, radius: 4, maxRadius: 50, growing: true });
                 playerMissiles.splice(i, 1);
                 playSound('explosion');
             } else {
@@ -419,7 +429,7 @@
                 m.y += (dy / dist) * m.speed;
 
                 ctx.strokeStyle = '#00ff88';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;
                 ctx.beginPath();
                 ctx.moveTo(m.startX, m.startY);
                 ctx.lineTo(m.x, m.y);
@@ -431,10 +441,10 @@
         for (let i = explosions.length - 1; i >= 0; i--) {
             let ex = explosions[i];
             if (ex.growing) {
-                ex.radius += 2;
+                ex.radius += 3;
                 if (ex.radius >= ex.maxRadius) ex.growing = false;
             } else {
-                ex.radius -= 1;
+                ex.radius -= 1.5;
                 if (ex.radius <= 0) {
                     explosions.splice(i, 1);
                     continue;
@@ -443,7 +453,7 @@
 
             ctx.fillStyle = 'rgba(0, 255, 136, 0.4)';
             ctx.strokeStyle = '#ffcc00';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2);
             ctx.fill();
@@ -456,9 +466,9 @@
             em.y += em.speed;
 
             ctx.strokeStyle = '#ff3333';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.moveTo(em.x, em.y - 10);
+            ctx.moveTo(em.x, em.y - 15);
             ctx.lineTo(em.x, em.y);
             ctx.stroke();
 
@@ -480,7 +490,7 @@
             }
 
             // Hit Border Ground
-            if (em.y >= canvas.height - 20) {
+            if (em.y >= V_HEIGHT - 20) {
                 enemyMissiles.splice(i, 1);
                 health -= 15;
                 updateHUD();
@@ -493,34 +503,36 @@
             f15Strike.x += f15Strike.speed;
 
             // Jet Graphic
-            ctx.fillStyle = '#cccccc';
+            ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.moveTo(f15Strike.x, f15Strike.y);
-            ctx.lineTo(f15Strike.x - 40, f15Strike.y - 15);
-            ctx.lineTo(f15Strike.x - 40, f15Strike.y + 15);
+            ctx.lineTo(f15Strike.x - 50, f15Strike.y - 20);
+            ctx.lineTo(f15Strike.x - 50, f15Strike.y + 20);
             ctx.closePath();
             ctx.fill();
 
             // Green Smoke Trail
             ctx.strokeStyle = '#00a859';
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 6;
             ctx.beginPath();
-            ctx.moveTo(f15Strike.x - 40, f15Strike.y);
+            ctx.moveTo(f15Strike.x - 50, f15Strike.y);
             ctx.lineTo(0, f15Strike.y);
             ctx.stroke();
 
             // Clear screen enemies
             for (let i = enemyMissiles.length - 1; i >= 0; i--) {
-                explosions.push({ x: enemyMissiles[i].x, y: enemyMissiles[i].y, radius: 5, maxRadius: 30, growing: true });
+                explosions.push({ x: enemyMissiles[i].x, y: enemyMissiles[i].y, radius: 5, maxRadius: 40, growing: true });
                 enemyMissiles.splice(i, 1);
                 score += 10;
             }
             updateHUD();
 
-            if (f15Strike.x > canvas.width + 100) {
+            if (f15Strike.x > V_WIDTH + 100) {
                 f15Strike = null;
             }
         }
+
+        ctx.restore();
 
         requestAnimationFrame(gameLoop);
     }
