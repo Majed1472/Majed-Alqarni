@@ -14,52 +14,43 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            background-color: #030a05;
+        body {
+            background-color: #08170e;
+            color: #ffffff;
             overflow: hidden;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-        }
-
-        #game-wrapper {
-            width: 100vw;
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
+            width: 100vw;
         }
 
-        /* Fixed High-Res Canvas Layout */
         #game-container {
             position: relative;
-            width: 800px;
-            height: 600px;
-            background: linear-gradient(to bottom, #020804, #0a1f13);
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
+            max-height: 600px;
+            background: linear-gradient(to bottom, #030a05, #0d2818);
             border: 2px solid #00a859;
-            box-shadow: 0 0 30px rgba(0, 255, 128, 0.35);
+            box-shadow: 0 0 20px rgba(0, 255, 128, 0.2);
             overflow: hidden;
-            transform-origin: center center;
-            flex-shrink: 0;
         }
 
         canvas {
             display: block;
-            width: 800px;
-            height: 600px;
+            width: 100%;
+            height: 100%;
             cursor: crosshair;
         }
 
         /* HUD Overlay */
         .hud {
             position: absolute;
-            top: 12px;
-            left: 12px;
-            right: 12px;
+            top: 10px;
+            left: 10px;
+            right: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -68,14 +59,14 @@
         }
 
         .hud-box {
-            background: rgba(3, 20, 10, 0.88);
-            border: 1.5px solid #00ff88;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 16px;
+            background: rgba(3, 20, 10, 0.8);
+            border: 1px solid #00ff88;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: bold;
             color: #00ff88;
-            box-shadow: 0 0 12px rgba(0,255,136,0.3);
+            box-shadow: 0 0 10px rgba(0,255,136,0.3);
         }
 
         .hud-box span {
@@ -85,15 +76,15 @@
         /* Ultimate Skill Button */
         #f15-btn {
             position: absolute;
-            bottom: 25px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 12px 28px;
+            padding: 12px 24px;
             background: linear-gradient(45deg, #111, #006c35);
             border: 2px solid #ffcc00;
             color: #ffcc00;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
             border-radius: 30px;
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
@@ -116,14 +107,14 @@
             to { box-shadow: 0 0 25px #ffcc00, 0 0 5px #ffffff; }
         }
 
-        /* Screens */
+        /* Screens Screens */
         .screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(4, 15, 8, 0.94);
+            background: rgba(4, 15, 8, 0.92);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -135,37 +126,37 @@
 
         .screen h1 {
             color: #00ff88;
-            font-size: 34px;
-            margin-bottom: 12px;
-            text-shadow: 0 0 12px rgba(0,255,136,0.5);
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0,255,136,0.5);
         }
 
         .screen h2 {
             color: #ffcc00;
-            font-size: 22px;
+            font-size: 20px;
             margin-bottom: 20px;
         }
 
         .screen p {
             color: #cccccc;
             margin-bottom: 25px;
-            max-width: 520px;
+            max-width: 500px;
             line-height: 1.6;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .btn {
             background: linear-gradient(135deg, #00a859, #005a2f);
             color: white;
             border: none;
-            padding: 14px 36px;
+            padding: 12px 32px;
             font-size: 18px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0, 168, 89, 0.4);
             transition: 0.2s;
-            margin: 6px;
+            margin: 5px;
         }
 
         .btn:hover {
@@ -180,57 +171,56 @@
 
         .hidden { display: none !important; }
 
+        /* National Crest Badge */
         .badge {
-            width: 75px;
-            height: 75px;
+            width: 70px;
+            height: 70px;
             background: #006c35;
             border: 2px solid #ffcc00;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 34px;
+            font-size: 30px;
             margin-bottom: 15px;
-            box-shadow: 0 0 18px rgba(0, 255, 136, 0.4);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
         }
     </style>
 </head>
 <body>
 
-<div id="game-wrapper">
-    <div id="game-container">
-        <!-- HUD -->
-        <div class="hud">
-            <div class="hud-box">النقاط: <span id="score">0</span></div>
-            <div class="hud-box">سلامة الحدود: <span id="health">100%</span></div>
-            <div class="hud-box">الرتبة: <span id="rank">ملازم</span></div>
-        </div>
-
-        <!-- F15 Skill Button -->
-        <button id="f15-btn" onclick="useF15()">🇸🇦 استدعاء F-15 (ضربة قاضية)</button>
-
-        <!-- Start Screen -->
-        <div id="start-screen" class="screen">
-            <div class="badge">🇸🇦</div>
-            <h1>درع الوطن: حامي الحدود</h1>
-            <h2>بمناسبة اليوم الوطني السعودي</h2>
-            <p>قم باعتراض الصواريخ والطائرات المسيرة المعادية قبل وصولها للحدود. اضغط على الشاشة لإطلاق صواريخ الدفاع الجوي.</p>
-            <button class="btn" onclick="startGame()">ابدأ المهمة</button>
-        </div>
-
-        <!-- Game Over Screen -->
-        <div id="game-over-screen" class="screen hidden">
-            <h1>انتهت المعركة</h1>
-            <h2 id="final-rank">الرتبة: بطل الحدود</h2>
-            <p>تم تحقيق نتيجة: <strong id="final-score" style="color: #00ff88;">0</strong> نقطة في الدفاع عن مقدسات الوطن.</p>
-            <div>
-                <button class="btn" onclick="startGame()">إعادة المحاولة</button>
-                <button class="btn btn-share" onclick="shareResult()">مشاركة النتيجة 🚀</button>
-            </div>
-        </div>
-
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+<div id="game-container">
+    <!-- HUD -->
+    <div class="hud">
+        <div class="hud-box">النقاط: <span id="score">0</span></div>
+        <div class="hud-box">سلامة الحدود: <span id="health">100%</span></div>
+        <div class="hud-box">الرتبة: <span id="rank">ملازم</span></div>
     </div>
+
+    <!-- F15 Skill Button -->
+    <button id="f15-btn" onclick="useF15()">🇸🇦 استدعاء F-15 (ضربة قاضية)</button>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+        <div class="badge">🇸🇦</div>
+        <h1>درع الوطن: حامي الحدود</h1>
+        <h2>بمناسبة اليوم الوطني السعودي</h2>
+        <p>قم باعتراض الصواريخ والطائرات المسيرة المعادية قبل وصولها للحدود. اضغط على الشاشة لإطلاق صواريخ الدفاع الجوي.</p>
+        <button class="btn" onclick="startGame()">ابدأ المهمة</button>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="screen hidden">
+        <h1>انتهت المعركة</h1>
+        <h2 id="final-rank">الرتبة: بطل الحدود</h2>
+        <p>تم تحقيق نتيجة: <strong id="final-score" style="color: #00ff88;">0</strong> نقطة في الدفاع عن مقدسات الوطن.</p>
+        <div>
+            <button class="btn" onclick="startGame()">إعادة المحاولة</button>
+            <button class="btn btn-share" onclick="shareResult()">مشاركة النتيجة 🚀</button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
 </div>
 
 <script>
@@ -238,20 +228,13 @@
     const ctx = canvas.getContext('2d');
     const container = document.getElementById('game-container');
 
-    let currentScale = 1;
-
-    // Smart Auto-Scale maintaining clear visual proportions
-    function fitScreen() {
-        const padding = 10;
-        const scaleX = (window.innerWidth - padding) / 800;
-        const scaleY = (window.innerHeight - padding) / 600;
-        currentScale = Math.min(scaleX, scaleY);
-        container.style.transform = `scale(${currentScale})`;
+    // Resize canvas
+    function resizeCanvas() {
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
     }
-
-    window.addEventListener('resize', fitScreen);
-    window.addEventListener('load', fitScreen);
-    fitScreen();
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
     // Audio Synthesizer (Web Audio API)
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -271,19 +254,19 @@
         if (type === 'launch') {
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(400, now);
-            osc.frequency.exponentialRampToValueAtTime(100, now + 0.25);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
             gain.gain.setValueAtTime(0.2, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
             osc.start(now);
-            osc.stop(now + 0.25);
+            osc.stop(now + 0.3);
         } else if (type === 'explosion') {
             osc.type = 'square';
             osc.frequency.setValueAtTime(120, now);
-            osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
+            osc.frequency.exponentialRampToValueAtTime(30, now + 0.4);
             gain.gain.setValueAtTime(0.4, now);
-            gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
             osc.start(now);
-            osc.stop(now + 0.35);
+            osc.stop(now + 0.4);
         } else if (type === 'f15') {
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(150, now);
@@ -307,11 +290,6 @@
     let f15Strike = null;
     let spawnTimer = 0;
 
-    // Fixed 60 FPS Controller
-    let lastTime = performance.now();
-    const fpsLimit = 60;
-    const interval = 1000 / fpsLimit;
-
     // Ranks
     function getRank(s) {
         if (s < 100) return "ملازم";
@@ -322,33 +300,24 @@
     }
 
     // Controls
-    function handlePointer(e) {
+    canvas.addEventListener('click', (e) => {
         if (!gameActive) return;
-        const rect = container.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-        const targetX = (clientX - rect.left) / currentScale;
-        const targetY = (clientY - rect.top) / currentScale;
-
+        const rect = canvas.getBoundingClientRect();
+        const targetX = e.clientX - rect.left;
+        const targetY = e.clientY - rect.top;
+        
+        // Launch interceptor
         playerMissiles.push({
-            startX: 400,
-            startY: 570,
-            x: 400,
-            y: 570,
+            startX: canvas.width / 2,
+            startY: canvas.height - 20,
+            x: canvas.width / 2,
+            y: canvas.height - 20,
             targetX: targetX,
             targetY: targetY,
-            speed: 7.5
+            speed: 8
         });
         playSound('launch');
-    }
-
-    container.addEventListener('mousedown', handlePointer);
-    container.addEventListener('touchstart', (e) => {
-        if (e.target.tagName === 'BUTTON') return;
-        e.preventDefault();
-        handlePointer(e);
-    }, { passive: false });
+    });
 
     function startGame() {
         score = 0;
@@ -359,7 +328,6 @@
         explosions = [];
         f15Strike = null;
         gameActive = true;
-        lastTime = performance.now();
 
         document.getElementById('start-screen').classList.add('hidden');
         document.getElementById('game-over-screen').classList.add('hidden');
@@ -389,17 +357,19 @@
 
         f15Strike = {
             x: -100,
-            y: 180,
-            speed: 12
+            y: canvas.height * 0.3,
+            speed: 15
         };
     }
 
     function spawnEnemy() {
-        const startX = Math.random() * 720 + 40;
+        const startX = Math.random() * (canvas.width - 40) + 20;
         enemyMissiles.push({
             x: startX,
             y: 0,
-            speed: 1.2 + Math.random() * 0.8 + (score / 400)
+            targetX: startX + (Math.random() * 100 - 50),
+            targetY: canvas.height,
+            speed: 1.5 + Math.random() * 1.5 + (score / 200)
         });
     }
 
@@ -419,33 +389,26 @@
         }
     }
 
-    // Main 60FPS Game Loop
-    function gameLoop(now) {
+    // Main Game Loop
+    function gameLoop() {
         if (!gameActive) return;
-        requestAnimationFrame(gameLoop);
 
-        const delta = now - lastTime;
-        if (delta < interval) return; // Cap at 60 FPS
-        lastTime = now - (delta % interval);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.clearRect(0, 0, 800, 600);
-
-        // Ground / Border Defense Base
+        // Draw Ground / Border Base
         ctx.fillStyle = '#004d25';
-        ctx.fillRect(0, 575, 800, 25);
-        ctx.fillStyle = '#111';
-        ctx.fillRect(355, 560, 90, 18);
+        ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
         ctx.fillStyle = '#ffcc00';
-        ctx.fillRect(375, 555, 50, 10); // Patriot Battery
+        ctx.fillRect(canvas.width / 2 - 25, canvas.height - 25, 50, 10); // Battery Base
 
         // Enemy Spawning
         spawnTimer++;
-        if (spawnTimer > Math.max(30, 85 - Math.floor(score / 15))) {
+        if (spawnTimer > Math.max(20, 80 - Math.floor(score / 20))) {
             spawnEnemy();
             spawnTimer = 0;
         }
 
-        // Update & Draw Interceptor Missiles (Player)
+        // Update & Draw Player Missiles
         for (let i = playerMissiles.length - 1; i >= 0; i--) {
             let m = playerMissiles[i];
             let dx = m.targetX - m.x;
@@ -453,26 +416,19 @@
             let dist = Math.hypot(dx, dy);
 
             if (dist < m.speed) {
-                explosions.push({ x: m.targetX, y: m.targetY, radius: 4, maxRadius: 42, growing: true });
+                explosions.push({ x: m.targetX, y: m.targetY, radius: 2, maxRadius: 35, growing: true });
                 playerMissiles.splice(i, 1);
                 playSound('explosion');
             } else {
                 m.x += (dx / dist) * m.speed;
                 m.y += (dy / dist) * m.speed;
 
-                // Smoke Trail
-                ctx.strokeStyle = 'rgba(0, 255, 136, 0.4)';
-                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#00ff88';
+                ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.moveTo(m.startX, m.startY);
                 ctx.lineTo(m.x, m.y);
                 ctx.stroke();
-
-                // Missile Rocket Head
-                ctx.fillStyle = '#ffffff';
-                ctx.beginPath();
-                ctx.arc(m.x, m.y, 5, 0, Math.PI * 2);
-                ctx.fill();
             }
         }
 
@@ -480,63 +436,41 @@
         for (let i = explosions.length - 1; i >= 0; i--) {
             let ex = explosions[i];
             if (ex.growing) {
-                ex.radius += 2.2;
+                ex.radius += 2;
                 if (ex.radius >= ex.maxRadius) ex.growing = false;
             } else {
-                ex.radius -= 1.2;
+                ex.radius -= 1;
                 if (ex.radius <= 0) {
                     explosions.splice(i, 1);
                     continue;
                 }
             }
 
-            ctx.fillStyle = 'rgba(0, 255, 136, 0.35)';
+            ctx.fillStyle = 'rgba(0, 255, 136, 0.4)';
             ctx.strokeStyle = '#ffcc00';
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.arc(ex.x, ex.y, ex.radius, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
         }
 
-        // Update & Draw Enemy Drone/Missile Objects (Clear Graphic Bodies)
+        // Update & Draw Enemies
         for (let i = enemyMissiles.length - 1; i >= 0; i--) {
             let em = enemyMissiles[i];
             em.y += em.speed;
 
-            // Render Rocket Body & Thruster Flame
-            ctx.save();
-            ctx.translate(em.x, em.y);
-
-            // Thruster Flame
-            ctx.fillStyle = Math.random() > 0.5 ? '#ff9900' : '#ff3300';
+            ctx.strokeStyle = '#ff3333';
+            ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.arc(0, -16, 5, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Main Body
-            ctx.fillStyle = '#cc0000';
-            ctx.fillRect(-4, -14, 8, 14);
-
-            // Nose Cone
-            ctx.fillStyle = '#ff3333';
-            ctx.beginPath();
-            ctx.moveTo(-5, 0);
-            ctx.lineTo(5, 0);
-            ctx.lineTo(0, 10);
-            ctx.closePath();
-            ctx.fill();
-
-            // Wings
-            ctx.fillStyle = '#880000';
-            ctx.fillRect(-8, -10, 16, 4);
-
-            ctx.restore();
+            ctx.moveTo(em.x, em.y - 10);
+            ctx.lineTo(em.x, em.y);
+            ctx.stroke();
 
             // Collision with Explosions
             let destroyed = false;
             for (let ex of explosions) {
-                if (Math.hypot(em.x - ex.x, em.y - ex.y) < ex.radius + 8) {
+                if (Math.hypot(em.x - ex.x, em.y - ex.y) < ex.radius) {
                     destroyed = true;
                     break;
                 }
@@ -550,8 +484,8 @@
                 continue;
             }
 
-            // Hit Ground
-            if (em.y >= 575) {
+            // Hit Border Ground
+            if (em.y >= canvas.height - 20) {
                 enemyMissiles.splice(i, 1);
                 health -= 15;
                 updateHUD();
@@ -559,39 +493,41 @@
             }
         }
 
-        // F-15 Jet Air Strike Graphic
+        // F-15 Strike Effect
         if (f15Strike) {
             f15Strike.x += f15Strike.speed;
 
-            // Jet Silhouette & Details
-            ctx.fillStyle = '#ffffff';
+            // Jet Graphic
+            ctx.fillStyle = '#cccccc';
             ctx.beginPath();
             ctx.moveTo(f15Strike.x, f15Strike.y);
-            ctx.lineTo(f15Strike.x - 60, f15Strike.y - 22);
-            ctx.lineTo(f15Strike.x - 60, f15Strike.y + 22);
+            ctx.lineTo(f15Strike.x - 40, f15Strike.y - 15);
+            ctx.lineTo(f15Strike.x - 40, f15Strike.y + 15);
             ctx.closePath();
             ctx.fill();
 
-            // Green National Smoke Trail
+            // Green Smoke Trail
             ctx.strokeStyle = '#00a859';
-            ctx.lineWidth = 8;
+            ctx.lineWidth = 4;
             ctx.beginPath();
-            ctx.moveTo(f15Strike.x - 60, f15Strike.y);
+            ctx.moveTo(f15Strike.x - 40, f15Strike.y);
             ctx.lineTo(0, f15Strike.y);
             ctx.stroke();
 
-            // Clear Screen Enemies
+            // Clear screen enemies
             for (let i = enemyMissiles.length - 1; i >= 0; i--) {
-                explosions.push({ x: enemyMissiles[i].x, y: enemyMissiles[i].y, radius: 5, maxRadius: 40, growing: true });
+                explosions.push({ x: enemyMissiles[i].x, y: enemyMissiles[i].y, radius: 5, maxRadius: 30, growing: true });
                 enemyMissiles.splice(i, 1);
                 score += 10;
             }
             updateHUD();
 
-            if (f15Strike.x > 900) {
+            if (f15Strike.x > canvas.width + 100) {
                 f15Strike = null;
             }
         }
+
+        requestAnimationFrame(gameLoop);
     }
 </script>
 </body>
